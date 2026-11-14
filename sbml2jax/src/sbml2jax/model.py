@@ -8,6 +8,11 @@ models (work package 2) subclass `JaxModel` and add networks as fields.
 `simulate` solves the ODE system with diffrax. Dosing and other changes are
 `Segment`s: the integration restarts at the start of each segment with the
 changes applied to states or constants, as roadrunner/sbmlsim timecourses do.
+
+The output times and the segment ends fix the structure of the solve and must
+be concrete; the inputs `p` and the values of the changes may be traced, so
+`simulate` can be compiled with `jax.jit` and batched with `jax.vmap` over
+inputs and doses.
 """
 
 import types
@@ -19,6 +24,7 @@ import diffrax
 import equinox as eqx
 import jax
 import jax.numpy as jnp
+import numpy as np
 
 from sbml2jax.convert import convert_sbml2jax, load_module
 
@@ -92,15 +98,26 @@ class JaxModel(eqx.Module):
 
         Args:
             ts: increasing output times; the simulation starts at `ts[0]`.
+                Concrete values (not traced), also under `jax.jit`.
             segments: changes during the timecourse; default one segment to
-                `ts[-1]` without changes.
+                `ts[-1]` without changes. The ends are concrete, the values of
+                the changes may be traced.
             settings: solver settings, `SolverSettings()` by default.
 
         Returns:
             Array of shape `(len(ts), len(OUTPUTS))`.
+
+        Raises:
+            TypeError: if `ts` is traced.
         """
         settings = settings or SolverSettings()
-        ts = jnp.asarray(ts, dtype=jnp.float64)
+        try:
+            ts = np.asarray(ts, dtype=np.float64)
+        except jax.errors.TracerArrayConversionError as err:
+            raise TypeError(
+                "the output times `ts` must be concrete; pass them as a constant, "
+                "not as an argument of a jitted or vmapped function"
+            ) from err
         t0 = float(ts[0])
         y, c = self.module.initial(self.p, t0)
         segments = list(segments) if segments else [Segment(end=float(ts[-1]))]
@@ -122,8 +139,8 @@ class JaxModel(eqx.Module):
             last = k == len(segments) - 1
             # output times of this segment; the end of a segment belongs to the next
             mask = (ts >= start) & ((ts <= segment.end) if last else (ts < segment.end))
-            seg_ts = ts[mask]
-            save = jnp.concatenate([seg_ts, jnp.asarray([segment.end])])
+            seg_ts = jnp.asarray(ts[mask])
+            save = jnp.asarray(np.append(ts[mask], segment.end))
             if segment.end > start:
                 solution = diffrax.diffeqsolve(
                     term,

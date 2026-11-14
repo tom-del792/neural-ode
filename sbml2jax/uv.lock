@@ -1653,6 +1653,8 @@ dependencies = [
     { name = "equinox" },
     { name = "jax", version = "0.10.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "jax", version = "0.12.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "python-libsbml" },
     { name = "rich" },
 ]
@@ -1686,6 +1688,7 @@ requires-dist = [
     { name = "libroadrunner", marker = "extra == 'testsuite'", specifier = ">=2.7.0" },
     { name = "matplotlib", marker = "extra == 'dev'", specifier = ">=3.9" },
     { name = "matplotlib", marker = "extra == 'testsuite'", specifier = ">=3.9" },
+    { name = "numpy", specifier = ">=1.26" },
     { name = "pandas", marker = "extra == 'dev'", specifier = ">=2.2" },
     { name = "pandas", marker = "extra == 'testsuite'", specifier = ">=2.2" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.0" },

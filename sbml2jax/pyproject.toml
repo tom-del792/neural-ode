@@ -29,6 +29,8 @@ dependencies = [
 	"python-libsbml>=5.20.4",
 	# arrays, autodiff, compilation
 	"jax>=0.4.35",
+	# concrete output times of the simulation
+	"numpy>=1.26",
 	# ODE solvers with gradients through the solve
 	"diffrax>=0.6.2",
 	# the model as a differentiable pytree
