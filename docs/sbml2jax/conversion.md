@@ -43,6 +43,7 @@ A species with a rate rule integrates its value as it is.
 | `piecewise` | nested `jnp.where` (without `otherwise`: NaN) |
 | relations with more than two arguments | chained with `jnp.logical_and` |
 | `log` with one argument | `jnp.log10` |
+| `power`, `root` with a non-integer exponent | the power for a positive base, its value at zero for a negative base, so gradients stay finite, see [Conversion issues](conversion-issues.md) |
 | `factorial` | `jnp.exp(special.gammaln(x + 1))` |
 | `rem`, `quotient` | `jnp.fmod`, `jnp.trunc` of the division |
 | `avogadro` | 6.02214179e23, the value of the SBML Level 3 specification |

@@ -9,8 +9,11 @@
 from pathlib import Path
 
 from sbml2jax.model import JaxModel, Segment, SolverSettings
+from sbml2jax.pinned import fetch, read_pinned
 
-model = JaxModel.from_sbml(Path("examples/models/apixaban_body_flat.xml"))
+# the apixaban model at its pinned commit, see "Pinned models"
+sbml_path = fetch(read_pinned(Path("examples/models/models.toml"))["apixaban"])
+model = JaxModel.from_sbml(sbml_path)
 ```
 
 ## Simulating

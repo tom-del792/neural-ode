@@ -25323,16 +25323,16 @@
  "01244": {
   "stages": {
    "jax": {
-    "message": "conversion failed",
-    "status": "skip"
+    "message": "",
+    "status": "pass"
    },
    "roadrunner": {
     "message": "",
     "status": "pass"
    },
    "sbml2jax": {
-    "message": "UnsupportedError: unsupported: algebraic rules",
-    "status": "fail"
+    "message": "",
+    "status": "pass"
    }
   },
   "tags": [
@@ -29881,16 +29881,16 @@
  "01464": {
   "stages": {
    "jax": {
-    "message": "conversion failed",
-    "status": "skip"
+    "message": "",
+    "status": "pass"
    },
    "roadrunner": {
     "message": "",
     "status": "pass"
    },
    "sbml2jax": {
-    "message": "UnsupportedError: unsupported: rate rule of a species reference (S1_sr)",
-    "status": "fail"
+    "message": "",
+    "status": "pass"
    }
   },
   "tags": [
@@ -31802,16 +31802,16 @@
  "01553": {
   "stages": {
    "jax": {
-    "message": "conversion failed",
-    "status": "skip"
+    "message": "",
+    "status": "pass"
    },
    "roadrunner": {
     "message": "",
     "status": "pass"
    },
    "sbml2jax": {
-    "message": "UnsupportedError: unsupported: rate rule of a species reference (S2_stoch)",
-    "status": "fail"
+    "message": "",
+    "status": "pass"
    }
   },
   "tags": [

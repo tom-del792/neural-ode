@@ -28,8 +28,8 @@ under `sbml2jax/`); pre-commit: `.pre-commit-config.yaml` at the root.
 uv sync --extra dev
 uv run pre-commit install
 
-uv run pytest                                  # unit tests + apixaban roadrunner check
-uv run pytest tests/test_apixaban.py
+uv run pytest                                  # unit tests + pinned models against roadrunner
+uv run pytest tests/test_models.py             # apixaban, glimepiride, dapagliflozin (downloads once)
 tox r -e ruff                                  # lint and format check
 SBML2JAX_TESTSUITE=1 tox r -e testsuite        # gate: no regressions against testsuite/results.json
 
@@ -55,7 +55,10 @@ The pipeline is `sbml.read_document` -> `analysis.analyse` -> `codegen.generate`
   it uses (`Expr.deps`). Formulas are never printed and reparsed. piecewise ->
   nested `jnp.where` (no otherwise: NaN), relations chained with
   `logical_and`, `log` with one argument is log10, `factorial` via `gammaln`,
-  `rem` -> `fmod`, `quotient` -> `trunc`. delay, lambda, unexpanded function
+  `rem` -> `fmod`, `quotient` -> `trunc`. Powers and roots with a
+  non-integer exponent go through `_power`: the value at zero for a base <= 0
+  (double `jnp.where`), so a solver stage slightly below zero gives no NaN
+  gradient. delay, lambda, unexpanded function
   calls raise `UnsupportedError`.
 - `analysis.py`: `analyse(model) -> ModelSystem`, the work libcellml's
   analyser does in sbml2cellml. Every identifier has one role during the
@@ -92,6 +95,11 @@ The pipeline is `sbml.read_document` -> `analysis.analyse` -> `codegen.generate`
 - `variables.py`: `Names`, the identifiers of the generated module: SBML ids as
   they are, keywords and the reserved `t`, `y`, `c`, `p`, `jnp`, `jax`,
   `special` with a trailing underscore, derived names with numeric suffixes.
+- `pinned.py`, `cache.py`: `PinnedModel` (url with `{ref}`, commit, sha256),
+  `fetch` (download with urllib into `cache_dir()/models/<name>/<ref>/`, checksum
+  verified after the download and on every cache hit, atomic rename, `ChecksumError`),
+  `read_pinned` (TOML, one table per model). A branch instead of a commit has no
+  checksum, warns and is downloaded on every call.
 - `cli.py`, `console.py`, `log.py`: command line, rich console, opt-in rich
   logging. Library code logs with `logging.getLogger(__name__)`, never prints.
 - `testsuite/`: `sbml2jax-testsuite run|report`. `cases.py` and `compare.py`
@@ -112,8 +120,12 @@ The pipeline is `sbml.read_document` -> `analysis.analyse` -> `codegen.generate`
   `CaseResult.category` is pass / fail / unsupported (conversion failed) / skip.
 - Known conversion gaps are documented in `docs/conversion-issues.md`; fixing a
   gap updates the document and the results.
-- `examples/models/` holds the apixaban models (Myshkina et al. 2026,
-  https://github.com/matthiaskoenig/apixaban-model, commit d0e3277); generated
+- Published models are never copied into the repository. `examples/models/models.toml`
+  pins them (url with `{ref}`, commit, sha256, and the `verification` settings of
+  `tests/test_models.py`); `pinned.fetch` downloads into `~/.cache/sbml2jax/models`.
+  A new model is a new table, no code. Nothing model specific (ids, doses) in the
+  code or in the tests, only in that file. Tests without network use
+  `docs/examples/absorption.xml` (`tests/conftest.py`). Generated
   modules go to the gitignored `examples/results/`.
 - JAX runs in double precision (`jax_enable_x64` in `__init__.py`).
 - Google style docstrings on modules, classes and functions (ruff `D`).

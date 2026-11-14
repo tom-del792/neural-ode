@@ -1,0 +1,45 @@
+# Pinned SBML models, read with `sbml2jax.pinned.read_pinned`.
+#
+# A model is a table with the url of the SBML file ({ref} is replaced by the
+# ref), the commit as ref and the sha256 checksum of the file. The table
+# `verification` is read by `tests/test_models.py`: the dose (parameter id and
+# value) and the end of the simulation which is compared with roadrunner, and
+# the output and input parameter of the gradient check.
+#
+# A new model is a new table; no code changes.
+
+[apixaban]
+url = "https://raw.githubusercontent.com/matthiaskoenig/apixaban-model/{ref}/models/apixaban_body_flat.xml"
+ref = "d0e3277f3ebf389fe8ed8c9bc63be567ba929d3d"
+sha256 = "eeba5a98213ee4b32c2c2320b61c8409a5f427d59761c406738c6e21e741c6bb"
+
+[apixaban.verification]
+dose_id = "PODOSE_api"  # oral dose [mg]
+dose = 10.0
+end = 1440.0  # [min]
+output = "Cve_api"  # venous plasma concentration
+parameter = "LI__API2M_k"  # hepatic metabolism
+
+[glimepiride]
+url = "https://raw.githubusercontent.com/matthiaskoenig/glimepiride-model/{ref}/models/glimepiride_body_flat.xml"
+ref = "6f264e91390df0de844fea44a7b5fd344ff0b77e"
+sha256 = "a1b89b01a7c5832c80c182d3d71aa8a7a04abd2c03a4d889cabcd4852b6b94bd"
+
+[glimepiride.verification]
+dose_id = "PODOSE_gli"  # oral dose [mg]
+dose = 4.0
+end = 1440.0  # [min]
+output = "Cve_gli"  # venous plasma concentration
+parameter = "LI__GLI2M1_Vmax"  # hepatic metabolism
+
+[dapagliflozin]
+url = "https://raw.githubusercontent.com/matthiaskoenig/dapagliflozin-model/{ref}/models/dapagliflozin_body_flat.xml"
+ref = "3ecbb902b09fee2b3b0990d430bc82bd50d26b8a"
+sha256 = "50759bfbc20b9fa9dd3984be6d353757844e7e1855c0d80af6c7e933ffd007c3"
+
+[dapagliflozin.verification]
+dose_id = "PODOSE_dap"  # oral dose [mg]
+dose = 10.0
+end = 1440.0  # [min]
+output = "Cve_dap"  # venous plasma concentration
+parameter = "KI__DAPEX_f"  # renal excretion

@@ -1,8 +1,8 @@
 """A first simulation: apixaban 5 mg twice daily, plasma concentration and INR.
 
 The example of the documentation (`docs/index.md` includes the part between the
-`--8<--` markers). Run it from `sbml2jax/`; it writes the figure of the
-documentation:
+`--8<--` markers). The model is downloaded at its pinned commit on first use.
+Run it from `sbml2jax/`; it writes the figure of the documentation:
 
     uv run python examples/first_simulation.py ../docs/images/first-simulation.png
 """
@@ -21,8 +21,11 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 
 from sbml2jax.model import JaxModel, Segment
+from sbml2jax.pinned import fetch, read_pinned
 
-model = JaxModel.from_sbml(Path("examples/models/apixaban_body_flat.xml"))
+# the apixaban model at a fixed commit, downloaded into the cache and verified
+apixaban = read_pinned(Path("examples/models/models.toml"))["apixaban"]
+model = JaxModel.from_sbml(fetch(apixaban))
 outputs = model.module.OUTPUTS
 
 # 5 mg apixaban orally every 12 hours; the model time is in minutes

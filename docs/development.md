@@ -23,7 +23,7 @@ cd sbml2jax
 uv sync --extra dev
 uv run pre-commit install
 
-uv run pytest                                  # unit tests and the apixaban roadrunner check
+uv run pytest                                  # unit tests and the pinned models against roadrunner
 tox r -e ruff                                  # lint and format check
 SBML2JAX_TESTSUITE=1 tox r -e testsuite        # no regressions against testsuite/results.json
 ```
@@ -34,12 +34,15 @@ Code style: [ruff](https://docs.astral.sh/ruff/) with the `.ruff.toml` of the mo
 
 | file | checks |
 | --- | --- |
-| `tests/test_jaxmath.py` | translation of SBML formulas to `jnp` expressions: values of the operators and functions, collected dependencies, local names, errors for `delay` and `rateOf` |
+| `tests/test_jaxmath.py` | translation of SBML formulas to `jnp` expressions: values of the operators and functions, real powers of a negative base and their finite gradients, collected dependencies, local names, errors for `delay` and `rateOf` |
 | `tests/test_variables.py` | Python names of SBML ids: ids kept where possible, reserved words and keywords renamed, derived names unique |
 | `tests/test_codegen.py` | assignments ordered by their dependencies; cyclic and missing definitions raise |
-| `tests/test_apixaban.py` | milestone of work package 1: all outputs of the apixaban model match roadrunner (10 mg oral, 24 h, 97 time points), the gradient of the plasma concentration matches finite differences |
-| `tests/test_jit.py` | `simulate` under `jax.jit` and `jax.vmap` equals the eager simulation (subjects with different body weight and dose), the gradient under `jax.jit` equals the eager gradient, the function is traced once for different values, traced output times raise a `TypeError` |
+| `tests/test_pinned.py` | pinned models, without network (a local directory as remote, the absorption model): download into the cache, use of the cache, a wrong checksum raises and caches nothing, a damaged cache is downloaded again, a branch warns and follows the remote, invalid definitions and models files raise |
+| `tests/test_models.py` | milestone of work package 1, for every model of `examples/models/models.toml` (apixaban, glimepiride, dapagliflozin; needs network on the first run, then the cache): all outputs match roadrunner (oral dose, 24 h, 97 time points), the gradient of the plasma concentration matches finite differences |
+| `tests/test_jit.py` | on the absorption model, without network: `simulate` under `jax.jit` and `jax.vmap` equals the eager simulation (subjects with different clearance and dose), the gradient under `jax.jit` equals the eager gradient, the function is traced once for different values, traced output times raise a `TypeError` |
 | `tests/test_testsuite_full.py` | gate, only with `SBML2JAX_TESTSUITE=1`: no regression against the committed results of the SBML test suite in `testsuite/results.json` |
+
+The tests which need no network are `test_jaxmath.py`, `test_variables.py`, `test_codegen.py`, `test_pinned.py` and `test_jit.py`; their model is `docs/examples/absorption.xml`. `test_models.py` downloads the pinned models once into `~/.cache/sbml2jax/models/` (or `SBML2JAX_CACHE`), the test suite gate downloads the SBML test suite into the same cache. CI stores the cache, with the hash of `models.toml` in the key.
 
 After changes of the converter, rerun the full SBML test suite and commit the regenerated `testsuite/results.json` and `docs/testsuite.md`, see [Command line](sbml2jax/cli.md#sbml2jax-testsuite). Known gaps are documented in `sbml2jax/docs/conversion-issues.md`; fixing one updates the document and the results.
 
@@ -79,5 +82,6 @@ Some pages show files of the repository, included with `--8<--` (pymdownx.snippe
 | [Home](index.md#a-first-simulation) | `sbml2jax/examples/first_simulation.py`, figure `docs/images/first-simulation.png` | `uv run python examples/first_simulation.py ../docs/images/first-simulation.png` in `sbml2jax/` |
 | [Generated module](sbml2jax/generated-module.md) | `docs/examples/absorption.py` | `uv run sbml2jax ../docs/examples/absorption.xml -o ../docs/examples/absorption.py` in `sbml2jax/` |
 | [Apixaban model](sbml2jax/apixaban.md) | `sbml2jax/examples/apixaban_example.py` | |
+| [Pinned models](sbml2jax/models.md) | `sbml2jax/examples/models/models.toml` | edited by hand |
 
 The workflow `.github/workflows/docs.yml` regenerates `docs/examples/absorption.py` and fails if it differs from the committed file, builds the site with `--strict` on every pull request, and publishes it to GitHub Pages on every push to `main`. The site is https://matthiaskoenig.github.io/neural-ode/; GitHub Pages is enabled in the settings of the repository (Pages, source "GitHub Actions").

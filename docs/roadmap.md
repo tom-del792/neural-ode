@@ -6,7 +6,7 @@ Every work package is a module of the monorepo: a self-contained Python package 
 
 | work package | content | module | status |
 | --- | --- | --- | --- |
-| 1 | SBML to differentiable JAX code, diffrax simulation, verification against roadrunner and the SBML test suite | [`sbml2jax`](sbml2jax/index.md) | done: apixaban model verified, 998 of 1823 test suite cases pass |
+| 1 | SBML to differentiable JAX code, diffrax simulation, verification against roadrunner and the SBML test suite | [`sbml2jax`](sbml2jax/index.md) | done: apixaban model verified, 1001 of 1823 test suite cases pass |
 | 2 | hybrid models: three placements of a neural network in the apixaban model (covariates, effects, absorption), training and validation | `hybrid` | in progress |
 | 3 | evaluation of the hybrid models against the mechanistic model and the data | | planned |
 | 4 | export of the hybrid models in PEtab SciML | | planned |
@@ -17,6 +17,7 @@ Every work package is a module of the monorepo: a self-contained Python package 
 - [x] Simulation with diffrax, dosing by segments
 - [x] Gradients with respect to every number of the model
 - [x] Apixaban model: all outputs match roadrunner, gradients match finite differences
+- [x] Published models pinned to a commit and a checksum instead of copies; glimepiride and dapagliflozin models verified with the same test
 - [x] SBML test suite run with a regression gate in CI
 - [ ] Events as diffrax events (root finding and restart), see [Conversion issues](sbml2jax/conversion-issues.md)
 
