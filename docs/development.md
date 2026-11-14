@@ -9,6 +9,7 @@ The repository is a monorepo. Every top-level directory is a module: a self-cont
 ```text
 .
 ├── sbml2jax/            # work package 1, see sbml2jax/CLAUDE.md
+├── hybrid/              # work package 2, see hybrid/CLAUDE.md
 ├── docs/                # this documentation
 ├── zensical.toml        # configuration of the documentation
 ├── pyproject.toml       # the tools which build the documentation (not a package)
@@ -29,7 +30,35 @@ SBML2JAX_TESTSUITE=1 tox r -e testsuite        # no regressions against testsuit
 
 Code style: [ruff](https://docs.astral.sh/ruff/) with the `.ruff.toml` of the module, Google style docstrings on modules, classes and functions; they are the [API reference](api/index.md).
 
+### Tests of sbml2jax
+
+| file | checks |
+| --- | --- |
+| `tests/test_jaxmath.py` | translation of SBML formulas to `jnp` expressions: values of the operators and functions, collected dependencies, local names, errors for `delay` and `rateOf` |
+| `tests/test_variables.py` | Python names of SBML ids: ids kept where possible, reserved words and keywords renamed, derived names unique |
+| `tests/test_codegen.py` | assignments ordered by their dependencies; cyclic and missing definitions raise |
+| `tests/test_apixaban.py` | milestone of work package 1: all outputs of the apixaban model match roadrunner (10 mg oral, 24 h, 97 time points), the gradient of the plasma concentration matches finite differences |
+| `tests/test_jit.py` | `simulate` under `jax.jit` and `jax.vmap` equals the eager simulation (subjects with different body weight and dose), the gradient under `jax.jit` equals the eager gradient, the function is traced once for different values, traced output times raise a `TypeError` |
+| `tests/test_testsuite_full.py` | gate, only with `SBML2JAX_TESTSUITE=1`: no regression against the committed results of the SBML test suite in `testsuite/results.json` |
+
 After changes of the converter, rerun the full SBML test suite and commit the regenerated `testsuite/results.json` and `docs/testsuite.md`, see [Command line](sbml2jax/cli.md#sbml2jax-testsuite). Known gaps are documented in `sbml2jax/docs/conversion-issues.md`; fixing one updates the document and the results.
+
+## Checks of hybrid
+
+```bash
+cd hybrid
+uv sync --extra dev
+uv run pytest                                  # unit tests
+tox r -e ruff                                  # lint and format check
+```
+
+`sbml2jax` is a path dependency (`../sbml2jax`), so the CI workflow of `hybrid` also runs on changes of `sbml2jax`.
+
+### Tests of hybrid
+
+| file | checks |
+| --- | --- |
+| `tests/test_package.py` | the package imports, double precision is enabled through `sbml2jax` |
 
 ## Documentation
 

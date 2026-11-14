@@ -1,3 +1,8 @@
+"""Python names of SBML ids.
+
+Ids kept where possible, reserved words and keywords renamed, derived names unique.
+"""
+
 from sbml2jax.variables import Names
 
 
