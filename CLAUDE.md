@@ -9,6 +9,8 @@ commands of a module from its directory.
 
 - `sbml2jax/`: SBML to JAX converter and the roadrunner / SBML test suite
   verification (work package 1), see `sbml2jax/CLAUDE.md`.
+- `hybrid/`: neural networks in the mechanistic model, data generation and
+  training (work package 2), see `hybrid/CLAUDE.md`.
 
 New modules (hybrid models, PEtab SciML export) go into new top-level
 directories and depend on `sbml2jax` as a package, not by importing its files.
