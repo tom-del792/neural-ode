@@ -1,3 +1,8 @@
+"""Translation of SBML formulas to jnp expressions.
+
+Values of the operators, collected dependencies, local names, unsupported constructs.
+"""
+
 import math
 
 import jax.numpy as jnp

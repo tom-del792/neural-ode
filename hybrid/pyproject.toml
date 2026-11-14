@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hybrid"
+dynamic = ["version"]
+description = "Hybrid neural-network ODE models for PK/PD in JAX."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+	{name="Tom Oberländer"},
+]
+classifiers = [
+	"Development Status :: 2 - Pre-Alpha",
+	"Intended Audience :: Science/Research",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+	"Programming Language :: Python :: 3.14",
+	"Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+keywords = ["JAX", "ODE", "PK/PD", "hybrid modelling", "UDE", "neural networks"]
+dependencies = [
+	# the mechanistic model: SBML to JAX, simulation with diffrax
+	"sbml2jax",
+	# arrays, autodiff, compilation
+	"jax>=0.4.35",
+	"numpy>=1.26",
+	# networks and models as one differentiable pytree
+	"equinox>=0.11.10",
+	# optimizers
+	"optax>=0.2.4",
+]
+
+[project.optional-dependencies]
+dev = [
+	"ruff>=0.8",
+	"pre-commit>=4.0",
+	"tox>=4.23",
+	"tox-uv>=1.16",
+	"pytest>=8.3",
+	"pytest-xdist>=3.6",
+]
+
+[project.urls]
+Repository = "https://github.com/matthiaskoenig/neural-ode/tree/main/hybrid"
+
+[tool.uv.sources]
+# the sibling module of the monorepo
+sbml2jax = { path = "../sbml2jax", editable = true }
+
+[tool.hatch.version]
+path = "./src/hybrid/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hybrid"]
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "src/hybrid/__init__.py" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-n auto"

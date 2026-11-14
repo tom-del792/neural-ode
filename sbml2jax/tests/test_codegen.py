@@ -1,3 +1,5 @@
+"""Code generation: assignments are ordered by their dependencies; cycles and missing definitions raise."""
+
 import pytest
 
 from sbml2jax.codegen import CodegenError, order
