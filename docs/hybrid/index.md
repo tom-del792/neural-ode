@@ -13,7 +13,7 @@ The networks are trained together with selected parameters of the mechanistic mo
 
 ## The apixaban model
 
-The basis is the flattened whole-body model `apixaban_body_flat.xml` ([Myshkina *et al.* 2026](../references.md#models)), loaded at a [pinned commit](../sbml2jax/models.md), which `sbml2jax` converts and verifies against roadrunner in work package 1, see [Apixaban model](../sbml2jax/apixaban.md):
+The basis is the flattened whole-body model `apixaban_body_flat.xml` ([Myshkina *et al.* 2026](../references.md#models)), loaded at a [pinned commit](../sbml2jax/models.md), which `sbml2jax` converts and verifies against roadrunner in work package 1, see [Apixaban in detail](../sbml2jax/models.md#apixaban-in-detail):
 
 - 51 states: blood and organ plasma for apixaban and the metabolites M1 and M7, the tissue of lung and rest of the body, the hepatocytes, the intestinal lumen and colon, the excreted amounts, and three dosing states.
 - Elimination: renal (filtration of the unbound fraction), hepatic (CYP3A4 and CYP3A5 to M2 and M7, sulfation of M2 to M1, biliary excretion) and intestinal (secretion by P-gp and BCRP).

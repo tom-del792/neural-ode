@@ -36,7 +36,6 @@ nav = [
     { "Command line" = "sbml2jax/cli.md" },
     { "SBML test suite" = "sbml2jax/testsuite.md" },
     { "Pinned models" = "sbml2jax/models.md" },
-    { "Apixaban model" = "sbml2jax/apixaban.md" },
     { "Conversion issues" = "sbml2jax/conversion-issues.md" },
   ] },
   { "Hybrid models" = [

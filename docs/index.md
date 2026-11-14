@@ -45,7 +45,7 @@ The project is a monorepo of self-contained Python packages, one per work packag
 Verification:
 
 - [Pinned models](sbml2jax/models.md): published models are downloaded at a fixed commit and verified by a checksum; the apixaban, glimepiride and dapagliflozin models are verified against libRoadRunner.
-- [Apixaban model](sbml2jax/apixaban.md): all 257 outputs of the whole-body model match libRoadRunner, and the gradients match finite differences.
+- [Apixaban in detail](sbml2jax/models.md#apixaban-in-detail): all 257 outputs of the whole-body model match libRoadRunner, and the gradients match finite differences.
 - [SBML test suite](sbml2jax/testsuite.md): 1001 of the 1823 cases pass, every converted model except two is simulated correctly.
 - [Conversion issues](sbml2jax/conversion-issues.md): what is not supported yet, and why.
 
