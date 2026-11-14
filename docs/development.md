@@ -81,7 +81,6 @@ Some pages show files of the repository, included with `--8<--` (pymdownx.snippe
 | [Conversion issues](sbml2jax/conversion-issues.md) | `sbml2jax/docs/conversion-issues.md` | edited by hand |
 | [Home](index.md#a-first-simulation) | `sbml2jax/examples/first_simulation.py`, figure `docs/images/first-simulation.png` | `uv run python examples/first_simulation.py ../docs/images/first-simulation.png` in `sbml2jax/` |
 | [Generated module](sbml2jax/generated-module.md) | `docs/examples/absorption.py` | `uv run sbml2jax ../docs/examples/absorption.xml -o ../docs/examples/absorption.py` in `sbml2jax/` |
-| [Apixaban model](sbml2jax/apixaban.md) | `sbml2jax/examples/apixaban_example.py` | |
-| [Pinned models](sbml2jax/models.md) | `sbml2jax/examples/models/models.toml` | edited by hand |
+| [Pinned models](sbml2jax/models.md) | `sbml2jax/examples/models/models.toml`, `sbml2jax/examples/apixaban_example.py` | edited by hand |
 
 The workflow `.github/workflows/docs.yml` regenerates `docs/examples/absorption.py` and fails if it differs from the committed file, builds the site with `--strict` on every pull request, and publishes it to GitHub Pages on every push to `main`. The site is https://matthiaskoenig.github.io/neural-ode/; GitHub Pages is enabled in the settings of the repository (Pages, source "GitHub Actions").

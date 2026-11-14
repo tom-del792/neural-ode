@@ -6,7 +6,7 @@ It is work package 1 of the thesis: the mechanistic baseline into which work pac
 
 ## Status
 
-- **Apixaban PBPK/PD model** ([Myshkina *et al.* 2026](../references.md#models), flattened whole-body model, 51 states): all 257 outputs match roadrunner over a 24 h oral dose (relative 1e-5, absolute 1e-9), and the gradient of the plasma concentration agrees with finite differences, see [Apixaban model](apixaban.md). The glimepiride and dapagliflozin models pass the same checks, see [Pinned models](models.md).
+- **Apixaban PBPK/PD model** ([Myshkina *et al.* 2026](../references.md#models), flattened whole-body model, 51 states): all 257 outputs match roadrunner over a 24 h oral dose (relative 1e-5, absolute 1e-9), and the gradient of the plasma concentration agrees with finite differences, see [Apixaban in detail](models.md#apixaban-in-detail). The glimepiride and dapagliflozin models pass the same checks, see [Pinned models](models.md).
 - **SBML test suite** (3.5.0, all 1823 cases): 1001 pass, 2 fail, 655 unsupported, 165 skip. Every model the converter accepts is simulated correctly except two cases with a parameter named `time`, which roadrunner fails as well, see [SBML test suite](testsuite.md). The unsupported cases use events, algebraic rules, delays, rateOf or rate rules of stoichiometries, see [Conversion issues](conversion-issues.md).
 
 ## The pipeline

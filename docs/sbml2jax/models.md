@@ -54,4 +54,38 @@ To update a model to a newer commit, change `ref` and `sha256` together. The che
 | glimepiride | 51 | 109 | 220 | 4 mg oral | [Elias & König 2026](../references.md#models) |
 | dapagliflozin | 38 | 95 | 200 | 10 mg oral | [Nemitz *et al.* 2026](../references.md#models) |
 
-All three models pass both checks. The dapagliflozin model first failed the gradient check, which led to the handling of real powers described in [Conversion issues](conversion-issues.md). [Apixaban model](apixaban.md) shows the comparison for one model in detail.
+All three models pass both checks. The dapagliflozin model first failed the gradient check, which led to the handling of real powers described in [Conversion issues](conversion-issues.md). [Apixaban in detail](#apixaban-in-detail) shows the comparison for one model.
+
+## Apixaban in detail
+
+The milestone of work package 1: the apixaban PBPK/PD model ([Myshkina *et al.* 2026](../references.md#models)) simulated with `sbml2jax` and diffrax matches libRoadRunner, and its gradients are correct.
+
+`apixaban_body_flat.xml` is the flattened whole-body model: arterial and venous blood, lung, liver, kidney, intestine and the rest of the body, with the absorption of the tablet, the hepatic metabolism to the metabolites M1, M2 and M7, renal and fecal excretion, and the effect of the plasma concentration on the coagulation markers INR, PT, aPTT, mPT and the anti-Xa activity. It has 51 states, 72 constants, 123 inputs and 257 outputs. The comp model and its submodels are in the same directory of the [source repository](https://github.com/matthiaskoenig/apixaban-model).
+
+`examples/apixaban_example.py` runs the two checks above for this model alone and prints the result: a 10 mg oral dose over 24 hours, every output compared at 241 time points, and the gradient of the mean plasma concentration with respect to the rate constant of the hepatic metabolism `LI__API2M_k`.
+
+```bash
+cd sbml2jax
+uv run python examples/apixaban_example.py
+```
+
+```text
+apixaban_body_flat.xml at commit d0e3277, sha256 eeba5a98213ee4b32c2c2320b61c8409a5f427d59761c406738c6e21e741c6bb
+51 states, 72 constants, 123 inputs, 257 outputs
+jax simulation (incl. compilation): 9.2 s
+outputs within tolerance: 257 of 257
+  PODOSE_api                     max relative difference 5.26e-03
+  GU__APITAB                     max relative difference 4.89e-06
+  LI__M7EX                       max relative difference 8.03e-06
+  GU__m2_colon                   max relative difference 5.68e-06
+  GU__APIUNDIS                   max relative difference 1.92e-06
+d mean(Cve_api) / d LI__API2M_k: autodiff -5.595828e-04, finite differences -5.595828e-04
+```
+
+All 257 outputs are within the tolerance. The largest relative differences are in quantities which decay towards zero, such as the remaining dose in the tablet `PODOSE_api`, where the absolute difference is below the absolute tolerance. The derivative by automatic differentiation agrees with finite differences to all printed digits.
+
+??? example "The script `examples/apixaban_example.py`"
+
+    ```python
+    --8<-- "sbml2jax/examples/apixaban_example.py"
+    ```
