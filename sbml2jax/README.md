@@ -20,9 +20,11 @@ simulator.
   model, 51 states): all 257 outputs match roadrunner over a 24 h oral dose
   (relative 1e-5, absolute 1e-9), and the gradient of the plasma
   concentration agrees with finite differences
-  (`tests/test_apixaban.py`, `examples/apixaban_example.py`).
-- **SBML test suite** (3.5.0, all 1823 cases, `docs/testsuite.md`): 998 pass,
-  2 fail, 658 unsupported, 165 skip. Every model the converter accepts is
+  (`tests/test_models.py`, `examples/apixaban_example.py`). The glimepiride and
+  dapagliflozin models pass the same checks. The models are downloaded at a
+  pinned commit, see `examples/models/README.md`.
+- **SBML test suite** (3.5.0, all 1823 cases, `docs/testsuite.md`): 1001 pass,
+  2 fail, 655 unsupported, 165 skip. Every model the converter accepts is
   simulated correctly except two cases with a parameter named `time`, which
   roadrunner fails as well. The unsupported cases use events, algebraic rules,
   delays, rateOf or rate rules of stoichiometries, see
@@ -44,8 +46,11 @@ import jax
 import jax.numpy as jnp
 
 from sbml2jax.model import JaxModel, Segment
+from sbml2jax.pinned import fetch, read_pinned
 
-model = JaxModel.from_sbml(Path("examples/models/apixaban_body_flat.xml"))
+# the apixaban model at a pinned commit, downloaded into the cache on first use
+sbml_path = fetch(read_pinned(Path("examples/models/models.toml"))["apixaban"])
+model = JaxModel.from_sbml(sbml_path)
 ts = jnp.linspace(0.0, 24 * 60.0, 241)  # min
 dose = [Segment(end=24 * 60.0, changes={"PODOSE_api": 10.0})]  # 10 mg oral
 ys = model.simulate(ts, dose)  # (time, OUTPUTS)
@@ -58,7 +63,7 @@ grad = jax.grad(lambda m: m.simulate(ts, dose)[:, model.module.OUTPUTS.index("Cv
 The generated module can also be written and read as a file:
 
 ```bash
-sbml2jax examples/models/apixaban_body_flat.xml -o apixaban.py
+sbml2jax model.xml -o model.py
 ```
 
 It contains `INPUTS`, `STATES`, `CONSTANTS`, `OUTPUTS` and the functions
@@ -68,7 +73,7 @@ code.
 ## Verification
 
 ```bash
-uv run pytest                                # unit tests and the apixaban check
+uv run pytest                                # unit tests and the pinned models against roadrunner
 uv run sbml2jax-testsuite run --first 10     # SBML test suite cases (all: ~40 min on 2 CPUs)
 uv run python examples/apixaban_example.py
 ```
@@ -84,6 +89,6 @@ and commit the regenerated results.
 ## License
 
 MIT. `src/sbml2jax/testsuite/cases.py` and `compare.py` are adapted from
-sbml2cellml (MIT, Matthias König). The apixaban models in `examples/models/`
-are from [apixaban-model](https://github.com/matthiaskoenig/apixaban-model)
-(Myshkina et al. 2026, doi:10.5281/zenodo.18877904), licensed CC BY-SA 4.0.
+sbml2cellml (MIT, Matthias König). The models of the examples are not part of
+the package: they are downloaded from their source repositories and keep their
+license (CC BY-SA 4.0), see `examples/models/README.md`.

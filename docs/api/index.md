@@ -11,6 +11,7 @@ The API of `sbml2jax`, rendered from the docstrings of the code. Most users need
 | [`sbml2jax.jaxmath`](jaxmath.md) | `translate`, formulas to `jax.numpy` code |
 | [`sbml2jax.codegen`](codegen.md) | `generate`, the source of the module |
 | [`sbml2jax.variables`](variables.md) | `Names`, the identifiers of the generated code |
+| [`sbml2jax.pinned`](pinned.md) | `PinnedModel`, `fetch`, `read_pinned`: models at a fixed commit, downloaded into the cache |
 | [`sbml2jax.cli`](cli.md) | the command line `sbml2jax` |
 | [`sbml2jax.testsuite`](testsuite.md) | the SBML test suite harness |
 

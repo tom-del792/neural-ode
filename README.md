@@ -19,7 +19,7 @@ its own `pyproject.toml`, lock file, tests and CI workflow.
 
 | module | content | status |
 | --- | --- | --- |
-| [`sbml2jax`](sbml2jax/) | SBML to differentiable JAX code, diffrax simulation, verification against roadrunner and the SBML test suite | work package 1: apixaban model verified, 998 of 1823 test suite cases pass |
+| [`sbml2jax`](sbml2jax/) | SBML to differentiable JAX code, diffrax simulation, verification against roadrunner and the SBML test suite | work package 1: apixaban model verified, 1001 of 1823 test suite cases pass |
 | [`hybrid`](hybrid/) | neural networks in the mechanistic model: data generation, networks, training | work package 2: in progress |
 
 Planned: evaluation (work package 3), PEtab SciML export (work package 4).
@@ -33,5 +33,6 @@ pip install "sbml2jax[testsuite] @ git+https://github.com/matthiaskoenig/neural-
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Models in `*/examples/models/` keep the licenses
-stated next to them.
+MIT, see [LICENSE](LICENSE). Published models are not copied into the
+repository but downloaded at a pinned commit; they keep the licenses stated in
+`sbml2jax/examples/models/README.md`.

@@ -55,9 +55,15 @@ jobs:
       - name: Cache the SBML test suite
         uses: actions/cache@v4
         with:
-          path: ~/.cache/sbml2jax
+          path: ~/.cache/sbml2jax/sbml-test-suite
           key: sbml-test-suite-3.5.0
-      - name: Unit tests, the apixaban roadrunner check and the SBML test suite gate
+      - name: Cache the pinned models
+        # the key changes with the commits and checksums of the models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/sbml2jax/models
+          key: pinned-models-${{ hashFiles('sbml2jax/examples/models/models.toml') }}
+      - name: Unit tests, the pinned models against roadrunner and the SBML test suite gate
         env:
           SBML2JAX_TESTSUITE: "1"
         run: uvx --with tox-uv tox -e py3.13 -- --durations=15

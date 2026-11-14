@@ -4,12 +4,24 @@ The publications behind the models, standards and tools of the project. Cite the
 
 ## Models
 
-**Apixaban PBPK/PD model.** The whole-body model of apixaban and its effect on coagulation, the application of the thesis. The SBML files in `sbml2jax/examples/models/` are from [apixaban-model](https://github.com/matthiaskoenig/apixaban-model) (commit d0e3277), licensed CC BY-SA 4.0.
+**Apixaban PBPK/PD model.** The whole-body model of apixaban and its effect on coagulation, the application of the thesis. The SBML file is downloaded from [apixaban-model](https://github.com/matthiaskoenig/apixaban-model) at a pinned commit, see [Pinned models](sbml2jax/models.md). The model is licensed CC BY-SA 4.0.
 
 > Myshkina M, *et al.*
 > **Apixaban PBPK/PD model.**
 > 2026.
 > [doi:10.5281/zenodo.18877904](https://doi.org/10.5281/zenodo.18877904)
+
+**Glimepiride and dapagliflozin PBPK models.** Two further whole-body models with the same structure and conventions, used to verify that `sbml2jax` and the hybrid models are not specific to apixaban. Both are downloaded at a pinned commit from [glimepiride-model](https://github.com/matthiaskoenig/glimepiride-model) and [dapagliflozin-model](https://github.com/matthiaskoenig/dapagliflozin-model) and are licensed CC BY-SA 4.0.
+
+> Elias M, König M.
+> **Physiologically based pharmacokinetic (PBPK) model of glimepiride.**
+> 2026.
+> [doi:10.5281/zenodo.14628700](https://doi.org/10.5281/zenodo.14628700)
+
+> Nemitz N, Elias M, König M.
+> **Physiologically based pharmacokinetic/pharmacodynamic (PBPK/PD) model of dapagliflozin.**
+> 2026.
+> [doi:10.5281/zenodo.13987865](https://doi.org/10.5281/zenodo.13987865)
 
 ## Hybrid models
 

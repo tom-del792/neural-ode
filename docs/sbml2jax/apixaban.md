@@ -4,7 +4,7 @@ The milestone of work package 1: the apixaban PBPK/PD model ([Myshkina *et al.* 
 
 ## The model
 
-`examples/models/apixaban_body_flat.xml` is the flattened whole-body model: arterial and venous blood, lung, liver, kidney, intestine and the rest of the body, with the absorption of the tablet, the hepatic metabolism to the metabolites M1, M2 and M7, renal and fecal excretion, and the effect of the plasma concentration on the coagulation markers INR, PT, aPTT, mPT and the anti-Xa activity. The comp model and its submodels are in the same directory, see `examples/models/README.md`.
+`apixaban_body_flat.xml` is the flattened whole-body model, downloaded at its pinned commit (see [Pinned models](models.md)): arterial and venous blood, lung, liver, kidney, intestine and the rest of the body, with the absorption of the tablet, the hepatic metabolism to the metabolites M1, M2 and M7, renal and fecal excretion, and the effect of the plasma concentration on the coagulation markers INR, PT, aPTT, mPT and the anti-Xa activity. The comp model and its submodels are in the same directory of the [source repository](https://github.com/matthiaskoenig/apixaban-model).
 
 | | |
 | --- | --- |
@@ -29,6 +29,7 @@ uv run python examples/apixaban_example.py
 ```
 
 ```text
+apixaban_body_flat.xml at commit d0e3277, sha256 eeba5a98213ee4b32c2c2320b61c8409a5f427d59761c406738c6e21e741c6bb
 51 states, 72 constants, 123 inputs, 257 outputs
 jax simulation (incl. compilation): 9.2 s
 outputs within tolerance: 257 of 257
@@ -42,7 +43,7 @@ d mean(Cve_api) / d LI__API2M_k: autodiff -5.595828e-04, finite differences -5.5
 
 All 257 outputs are within the tolerance. The largest relative differences are in quantities which decay towards zero, such as the remaining dose in the tablet `PODOSE_api`, where the absolute difference is below the absolute tolerance. The derivative by automatic differentiation agrees with finite differences to all printed digits.
 
-The same checks run in CI as `tests/test_apixaban.py`, on 97 time points.
+The same checks run in CI as `tests/test_models.py`, on 97 time points and for every model of [Pinned models](models.md).
 
 ??? example "The script `examples/apixaban_example.py`"
 

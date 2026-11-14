@@ -27,7 +27,7 @@ d mean(INR) / d fu_api       -5.907e-01
 
 ![Apixaban in venous plasma and INR for 5 mg twice daily](images/first-simulation.png)
 
-`JaxModel.from_sbml` reads the SBML file, writes its ODE system as plain `jax.numpy` code and wraps it in an equinox module whose only array is the vector of inputs `p`, every number of the SBML model. Each `Segment` restarts the integration with a change, here a dose into the oral dosing state `PODOSE_api`. `simulate` returns all 257 outputs of the model (species, parameters, compartments and reaction rates) at the requested times, and `jax.grad` differentiates through the stiff ODE solver. [Simulation](sbml2jax/simulation.md) describes the segments, the solver settings and the gradients in detail.
+`fetch` downloads the apixaban model at its [pinned](sbml2jax/models.md) commit into a local cache and verifies its checksum. `JaxModel.from_sbml` reads the SBML file, writes its ODE system as plain `jax.numpy` code and wraps it in an equinox module whose only array is the vector of inputs `p`, every number of the SBML model. Each `Segment` restarts the integration with a change, here a dose into the oral dosing state `PODOSE_api`. `simulate` returns all 257 outputs of the model (species, parameters, compartments and reaction rates) at the requested times, and `jax.grad` differentiates through the stiff ODE solver. [Simulation](sbml2jax/simulation.md) describes the segments, the solver settings and the gradients in detail.
 
 The figure is written by `uv run python examples/first_simulation.py ../docs/images/first-simulation.png` in `sbml2jax/`, the code above is included from that script.
 
@@ -44,8 +44,9 @@ The project is a monorepo of self-contained Python packages, one per work packag
 
 Verification:
 
+- [Pinned models](sbml2jax/models.md): published models are downloaded at a fixed commit and verified by a checksum; the apixaban, glimepiride and dapagliflozin models are verified against libRoadRunner.
 - [Apixaban model](sbml2jax/apixaban.md): all 257 outputs of the whole-body model match libRoadRunner, and the gradients match finite differences.
-- [SBML test suite](sbml2jax/testsuite.md): 998 of the 1823 cases pass, every converted model except two is simulated correctly.
+- [SBML test suite](sbml2jax/testsuite.md): 1001 of the 1823 cases pass, every converted model except two is simulated correctly.
 - [Conversion issues](sbml2jax/conversion-issues.md): what is not supported yet, and why.
 
 Next:
@@ -75,4 +76,4 @@ Please also cite the apixaban model ([Myshkina *et al.* 2026](references.md#mode
 
 ## License
 
-The code is licensed under the [MIT License](https://opensource.org/licenses/MIT). The apixaban models in `sbml2jax/examples/models/` are copied unchanged from [apixaban-model](https://github.com/matthiaskoenig/apixaban-model) and keep their license, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). `sbml2jax/src/sbml2jax/testsuite/cases.py` and `compare.py` are adapted from [sbml2cellml](https://github.com/matthiaskoenig/sbml2cellml) (MIT, Matthias König).
+The code is licensed under the [MIT License](https://opensource.org/licenses/MIT). The models are not part of the repository: they are downloaded at a pinned commit from their source repositories, such as [apixaban-model](https://github.com/matthiaskoenig/apixaban-model), and keep their license, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), see [Pinned models](sbml2jax/models.md). `sbml2jax/src/sbml2jax/testsuite/cases.py` and `compare.py` are adapted from [sbml2cellml](https://github.com/matthiaskoenig/sbml2cellml) (MIT, Matthias König).

@@ -21,6 +21,8 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+from sbml2jax.cache import cache_dir
+
 logger = logging.getLogger(__name__)
 
 #: version of the SBML test suite
@@ -29,8 +31,6 @@ SUITE_VERSION = "3.5.0"
 SUITE_URL = (
     "https://github.com/sbmlteam/sbml-test-suite/releases/download/{version}/semantic_tests_v{version}.zip"
 )
-#: environment variable overriding the cache root
-CACHE_ENV = "SBML2JAX_CACHE"
 #: name of a case directory
 CASE_ID = re.compile(r"^\d{5}$")
 #: component tags of SBML packages the converter does not support (comp models
@@ -53,11 +53,6 @@ class TestSuiteError(RuntimeError):
     """The test suite cannot be obtained or a case cannot be read."""
 
     __test__ = False  # the name starts with Test, pytest must not collect it
-
-
-def cache_dir() -> Path:
-    """Root of the cache, `SBML2JAX_CACHE` or `~/.cache/sbml2jax`."""
-    return Path(os.environ.get(CACHE_ENV, Path.home() / ".cache" / "sbml2jax"))
 
 
 def ensure_suite(version: str = SUITE_VERSION, cache: Path | None = None) -> Path:

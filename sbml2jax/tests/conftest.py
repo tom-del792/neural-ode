@@ -3,15 +3,12 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).parent.parent
-MODELS_DIR = ROOT / "examples" / "models"
-DATA_DIR = Path(__file__).parent / "data"
+#: the pinned models which are verified against roadrunner
+MODELS_TOML = ROOT / "examples" / "models" / "models.toml"
+#: small model of the documentation, the model of the tests without network
+ABSORPTION = ROOT.parent / "docs" / "examples" / "absorption.xml"
 
 
 @pytest.fixture
-def models_dir() -> Path:
-    return MODELS_DIR
-
-
-@pytest.fixture
-def data_dir() -> Path:
-    return DATA_DIR
+def absorption() -> Path:
+    return ABSORPTION

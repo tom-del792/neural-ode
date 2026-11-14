@@ -4,9 +4,9 @@ What the current version does not convert, or converts with a loss. Each item
 raises `UnsupportedError` with the feature name, so it shows up as a failure
 reason in [the test suite report](testsuite.md).
 
-Of the 1823 cases of the SBML test suite (3.5.0), 658 are unsupported:
-events 478, algebraic rules 89, rateOf 38, delay 33, rate rules of species
-references 20. Two converted cases fail, see below.
+Of the 1823 cases of the SBML test suite (3.5.0), 655 are unsupported:
+events 478, algebraic rules 88, rateOf 38, delay 33, rate rules of species
+references 18. Two converted cases fail, see below.
 
 ## Not supported
 
@@ -39,6 +39,19 @@ references 20. Two converted cases fail, see below.
 - **Species without an initial value** and parameters without a value are
   NaN, with a warning. The apixaban model has two unused parameters of this
   kind (`LI__Vmem`, `GU__Vapical`).
+- **Real powers of a negative base are not NaN.** `power(x, y)`, `root` and
+  `sqrt` with a non-integer exponent are not defined for a negative base, and
+  roadrunner returns NaN. sbml2jax returns the value at zero instead (0 for a
+  positive exponent), with a zero derivative; for a positive base nothing
+  changes, and integer exponents are the plain power for every base. The
+  reason is the gradient: an implicit solver evaluates the right-hand side
+  slightly below zero for a quantity which is zero, for example a
+  concentration before the dose. It rejects such a step, so the simulation is
+  correct, but the NaN of the rejected step turns every gradient through the
+  solve into NaN. This was found with the dapagliflozin model (a Hill term
+  `Cki_plasma_dap^KI__RTG_gamma` with exponent 2.8), whose outputs matched
+  roadrunner while all gradients were NaN. An exponent which is a parameter is
+  checked during the simulation: an integer value gives the plain power.
 - **Constraints** are ignored, with a warning.
 - **Changes during a simulation** (`Segment.changes`) set states or constants
   directly. Initial assignments are not evaluated again, which matches

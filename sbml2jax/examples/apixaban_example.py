@@ -1,6 +1,7 @@
 """Verification of the apixaban PBPK/PD model against roadrunner (work package 1).
 
-The flattened whole-body model is converted to JAX and a 10 mg oral dose is
+The flattened whole-body model is downloaded at its pinned commit (see
+`examples/models/models.toml`), converted to JAX and a 10 mg oral dose is
 simulated over 24 h with roadrunner and with diffrax. Every output of the
 model (species, parameters, compartments, reaction rates; 300+ quantities)
 is compared at 241 time points, then the gradient of the plasma
@@ -19,10 +20,12 @@ import numpy as np
 import roadrunner
 
 from sbml2jax.model import JaxModel, Segment, SolverSettings
+from sbml2jax.pinned import fetch, read_pinned
 
 MODELS = Path(__file__).parent / "models"
 RESULTS = Path(__file__).parent / "results"
-SBML = MODELS / "apixaban_body_flat.xml"
+#: the pinned model: url, commit and checksum
+PINNED = read_pinned(MODELS / "models.toml")["apixaban"]
 
 DOSE = 10.0  # mg, oral
 END = 24 * 60.0  # min
@@ -31,9 +34,9 @@ TS = np.linspace(0.0, END, 241)
 RTOL, ATOL = 1e-5, 1e-9
 
 
-def roadrunner_outputs(outputs: tuple[str, ...], species: dict) -> np.ndarray:
+def roadrunner_outputs(sbml: Path, outputs: tuple[str, ...], species: dict) -> np.ndarray:
     """Simulate the dose with roadrunner, selections in the quantities of the JAX outputs."""
-    rr = roadrunner.RoadRunner(str(SBML))
+    rr = roadrunner.RoadRunner(str(sbml))
     rr.integrator.setValue("relative_tolerance", 1e-10)
     rr.integrator.setValue("absolute_tolerance", 1e-12)
     selections = [f"[{o}]" if o in species and not species[o][1] else o for o in outputs]
@@ -44,7 +47,9 @@ def roadrunner_outputs(outputs: tuple[str, ...], species: dict) -> np.ndarray:
 
 def main() -> None:
     """Run the comparison and the gradient check."""
-    model = JaxModel.from_sbml(SBML, module_path=RESULTS / "apixaban_body_flat.py")
+    sbml = fetch(PINNED)  # downloaded on first use, then from the cache
+    print(f"{sbml.name} at commit {PINNED.ref[:7]}, sha256 {PINNED.sha256}")
+    model = JaxModel.from_sbml(sbml, module_path=RESULTS / "apixaban_body_flat.py")
     m = model.module
     print(
         f"{len(m.STATES)} states, {len(m.CONSTANTS)} constants, "
@@ -56,7 +61,7 @@ def main() -> None:
     t0 = time.perf_counter()
     ys = np.asarray(model.simulate(jnp.asarray(TS), segments, settings))
     print(f"jax simulation (incl. compilation): {time.perf_counter() - t0:.1f} s")
-    rr = roadrunner_outputs(m.OUTPUTS, m.SPECIES)
+    rr = roadrunner_outputs(sbml, m.OUTPUTS, m.SPECIES)
 
     excess = np.abs(ys - rr) - (ATOL + RTOL * np.abs(rr))
     worst = np.argsort(-excess.max(axis=0))[:5]
@@ -75,8 +80,8 @@ def main() -> None:
     grad = jax.grad(loss)(model).p
     name = "LI__API2M_k"
     k = m.INPUTS.index(name)
-    h = 1e-6 * max(abs(float(model.p[k])), 1.0)
     value = float(model.p[k])
+    h = 1e-3 * abs(value)
     up = loss(model.with_inputs({name: value + h}))
     down = loss(model.with_inputs({name: value - h}))
     fd = (up - down) / (2 * h)
