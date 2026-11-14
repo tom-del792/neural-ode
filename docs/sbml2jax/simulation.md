@@ -82,8 +82,25 @@ grad = jax.grad(loss)(model)  # a JaxModel, grad.p holds d loss / d p
 
 diffrax differentiates through the solve; the gradient also passes through the initial assignments of the model, which `initial` evaluates from `p`.
 
-!!! warning "Concrete times"
-    The assignment of output times to segments happens in Python, so `ts` and the segment ends must be concrete. `jax.jit` and `jax.vmap` around `simulate` are not supported yet; they are planned for work package 2.
+## Compilation and batching
+
+The output times `ts` and the segment ends fix the structure of the solve: they are assigned to segments in Python and must be concrete, also inside `jax.jit`. Everything else may be traced: the inputs `p` and the values of the changes of a segment, for example the dose. So `simulate` is compiled with `jax.jit` and batched over subjects and doses with `jax.vmap`:
+
+```python
+import numpy as np
+
+ts = np.linspace(0, 24 * 60, 49)  # concrete, closed over
+k = model.module.INPUTS.index("BW")
+
+def subject(weight: jax.Array, dose: jax.Array) -> jax.Array:
+    m = JaxModel(p=model.p.at[k].set(weight), module=model.module)
+    return m.simulate(ts, [Segment(end=24 * 60.0, changes={"PODOSE_api": dose})])
+
+batch = jax.jit(jax.vmap(subject))
+ys = batch(jnp.asarray([55.0, 75.0, 100.0]), jnp.asarray([2.5, 10.0, 25.0]))  # (3, 49, outputs)
+```
+
+The function is compiled once; further calls with other values reuse it. Passing `ts` as an argument of the jitted function raises a `TypeError`. `tests/test_jit.py` checks that jitted, batched and eager simulations and their gradients agree.
 
 ## The right-hand side
 
