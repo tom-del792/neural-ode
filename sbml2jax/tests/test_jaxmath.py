@@ -5,6 +5,7 @@ Values of the operators, collected dependencies, local names, unsupported constr
 
 import math
 
+import jax
 import jax.numpy as jnp
 import libsbml
 import pytest
@@ -62,6 +63,50 @@ def evaluate(formula: str, t: float = 1.5) -> float:
 )
 def test_translate(formula: str, expected: float) -> None:
     assert evaluate(formula) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize(
+    ("formula", "expected"),
+    [
+        # integer exponents are the plain power, also for a negative base
+        ("z^2", 0.25),
+        ("z^3", -0.125),
+        ("z^(-2)", 4.0),
+        ("pow(z, y)", -0.125),
+        # a real power of a negative base is continued with the value at zero
+        ("z^2.5", 0.0),
+        ("z^(-0.5)", math.inf),
+        ("sqrt(z)", 0.0),
+        ("root(3, z)", 0.0),
+        ("pow(z, x + 0.5)", 0.0),
+        ("root(x, z)", 0.0),
+        # nothing changes for a positive base
+        ("x^2.5", 2**2.5),
+        ("x^(-0.5)", 2**-0.5),
+        ("pow(x, y + 0.5)", 2**3.5),
+        ("root(y, x)", 2 ** (1 / 3)),
+    ],
+)
+def test_power(formula: str, expected: float) -> None:
+    assert evaluate(formula) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("formula", ["v^2.5", "v^0.5", "sqrt(v)", "root(3, v)", "pow(v, w)", "v^2"])
+@pytest.mark.parametrize("base", [-1e-12, 0.0, 2.0])
+def test_power_gradient_is_finite(formula: str, base: float) -> None:
+    """A base at or slightly below zero, as in a rejected solver step, gives no NaN gradient."""
+    expr = translate(libsbml.parseL3Formula(formula), lambda sid: sid)
+
+    def f(v: jax.Array, w: jax.Array) -> jax.Array:
+        return eval(expr.code, {"jnp": jnp, "special": special, "v": v, "w": w})
+
+    value, gradient = jax.value_and_grad(f, argnums=(0, 1))(base, 2.8)
+    assert math.isfinite(float(value))
+    assert all(math.isfinite(float(g)) for g in gradient)
+    if base > 0:
+        h = 1e-6
+        fd = float((f(base + h, 2.8) - f(base - h, 2.8)) / (2 * h))
+        assert float(gradient[0]) == pytest.approx(fd, rel=1e-6)
 
 
 def test_dependencies() -> None:

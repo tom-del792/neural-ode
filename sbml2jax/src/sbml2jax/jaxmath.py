@@ -51,6 +51,53 @@ def number(value: float) -> Expr:
     return Expr(f"({code})" if value < 0 else code)
 
 
+def _literal(node: libsbml.ASTNode) -> float | None:
+    """Return the value of a number in the formula, None for any other node."""
+    t = node.getType()
+    if t == libsbml.AST_INTEGER:
+        return float(node.getInteger())
+    if t in (libsbml.AST_REAL, libsbml.AST_REAL_E, libsbml.AST_RATIONAL):
+        return float(node.getReal())
+    if t == libsbml.AST_MINUS and node.getNumChildren() == 1:
+        value = _literal(node.getChild(0))
+        return None if value is None else -value
+    return None
+
+
+def _power(a: Expr, b: Expr, exponent: float | None) -> Expr:
+    """Return `a ** b` with finite gradients where a real power is not defined.
+
+    A power with a non-integer exponent is NaN for a negative base. An implicit
+    solver can evaluate the right-hand side slightly below zero for a quantity
+    which is zero (a concentration before the dose); it rejects that step, but
+    the NaN of the rejected step makes every gradient through the solve NaN.
+    Such a power is therefore continued with its value at zero for a negative
+    base, with a zero derivative; the value at zero itself is the same and the
+    derivative there is zero instead of infinite for exponents below one. For
+    a positive base nothing changes. Integer exponents are the plain power,
+    which is defined for every base.
+
+    Args:
+        a: the base.
+        b: the exponent.
+        exponent: the value of the exponent if it is a number in the formula.
+    """
+    deps = a.deps | b.deps
+    if exponent is not None and exponent == round(exponent):
+        return Expr(f"jnp.power({a.code}, {b.code})", deps)
+    if exponent is not None:
+        valid = f"({a.code} > 0.0)"
+        at_zero = "0.0" if exponent > 0 else "jnp.inf"
+    else:
+        # the exponent is only known in the simulation
+        valid = f"(({a.code} > 0.0) | ({b.code} == jnp.round({b.code})))"
+        at_zero = f"jnp.power(0.0, {b.code})"
+    root = exponent == 0.5
+    safe = f"jnp.where({valid}, {a.code}, 1.0)"
+    value = f"jnp.sqrt({safe})" if root else f"jnp.power({safe}, {b.code})"
+    return Expr(f"jnp.where({valid}, {value}, {at_zero})", deps)
+
+
 _UNARY: dict[int, str] = {
     libsbml.AST_FUNCTION_ABS: "jnp.abs",
     libsbml.AST_FUNCTION_EXP: "jnp.exp",
@@ -191,13 +238,14 @@ def translate(
         return Expr(f"({a.code} / {b.code})", a.deps | b.deps)
     if t in (libsbml.AST_POWER, libsbml.AST_FUNCTION_POWER):
         a, b = (tr(c) for c in children)
-        return Expr(f"jnp.power({a.code}, {b.code})", a.deps | b.deps)
+        return _power(a, b, _literal(children[1]))
     if t == libsbml.AST_FUNCTION_ROOT:
         if len(children) == 1:
-            a = tr(children[0])
-            return Expr(f"jnp.sqrt({a.code})", a.deps)
+            return _power(tr(children[0]), Expr("0.5"), 0.5)
         n, a = (tr(c) for c in children)
-        return Expr(f"jnp.power({a.code}, 1.0 / {n.code})", a.deps | n.deps)
+        degree = _literal(children[0])
+        exponent = 1.0 / degree if degree else None
+        return _power(a, Expr(f"(1.0 / {n.code})", n.deps), exponent)
     if t == libsbml.AST_FUNCTION_LOG:
         if len(children) == 1:
             a = tr(children[0])
