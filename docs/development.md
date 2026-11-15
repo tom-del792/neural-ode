@@ -68,9 +68,10 @@ tox r -e ruff                                  # lint and format check
 | `tests/test_training.py` | the negative log-likelihood and its mask; `fit` learns a function and its noise, returns the model with the lowest validation loss and is reproducible; saved weights |
 | `tests/test_evaluation.py` | metrics of a perfect and of a constant prediction; the figures are written |
 | `tests/test_warmup.py` | the warm-up on the small test model from the configuration to the evaluated run: files of the run, validation patients are predicted, evaluation from saved weights, command line |
+| `tests/test_notebook.py` | `notebooks/walkthrough.ipynb` is current and contains every source file; notebooks are committed without outputs |
 | `tests/test_apixaban.py` | the ids of `configs/warmup_apixaban.toml` exist in the pinned apixaban model (downloads the model once) |
 
-All tests but the last run without a network connection on `docs/examples/absorption.xml`, with the generated files in a temporary directory.
+After a change of a source file of `hybrid`, run `python notebooks/build_walkthrough.py` in `hybrid/` and commit the notebook. All tests but the last run without a network connection on `docs/examples/absorption.xml`, with the generated files in a temporary directory.
 
 ## Documentation
 

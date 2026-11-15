@@ -29,12 +29,15 @@ on it and evaluates it on patients which were held out, see the
 [documentation](../docs/hybrid/warmup.md). A case is one TOML file in
 `configs/`. Generated files (datasets, weights, logs, figures) are not part of
 the repository: they are written below `HYBRID_RUNS` (default
-`~/.cache/hybrid/runs`). `notebooks/warmup.ipynb` runs the same in Google
-Colab and writes to Google Drive.
+`~/.cache/hybrid/runs`). In Google Colab, `notebooks/warmup.ipynb` runs the
+same and writes to Google Drive, and `notebooks/walkthrough.ipynb` contains
+the whole code of the package in cells, to read, change and run it there.
+The walk-through is generated: after a change of a source file run
+`python notebooks/build_walkthrough.py`.
 
 ```
 configs/         one TOML file per case
-notebooks/       entry point for Google Colab
+notebooks/       notebooks for Google Colab; build_walkthrough.py generates walkthrough.ipynb
 examples/        scripts which regenerate the figures of the documentation
 src/hybrid/
   config.py      reads and checks a case

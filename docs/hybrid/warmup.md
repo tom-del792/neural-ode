@@ -32,7 +32,16 @@ uv run hybrid train configs/warmup_apixaban.toml      # about one minute on a CP
 | `hybrid train CONFIG` | generates the panel if it does not exist, trains the network and evaluates it |
 | `hybrid evaluate RUN` | writes the metrics and figures of a run again, from its saved weights |
 
-In Google Colab, the notebook [`hybrid/notebooks/warmup.ipynb`](https://colab.research.google.com/github/matthiaskoenig/neural-ode/blob/main/hybrid/notebooks/warmup.ipynb) installs the package, runs the same commands and writes to Google Drive.
+## In Google Colab
+
+Two notebooks install the package in Colab and write the generated files to Google Drive:
+
+| notebook | |
+| --- | --- |
+| [`warmup.ipynb`](https://colab.research.google.com/github/matthiaskoenig/neural-ode/blob/main/hybrid/notebooks/warmup.ipynb) | short: runs the commands above and shows the figures |
+| [`walkthrough.ipynb`](https://colab.research.google.com/github/matthiaskoenig/neural-ode/blob/main/hybrid/notebooks/walkthrough.ipynb) | the whole code of the package, file by file in the order of a run, with a cell after every step which runs it and shows its result |
+
+In the walk-through, a cell which starts with `%%source <file>` is that file of the repository: running it writes the file into the clone of the session, so the code is read, changed and run in the notebook. The last cells run the checks and push the changes to a branch for a pull request. The notebook is generated from the source files by `python notebooks/build_walkthrough.py` in `hybrid/` and never edited by hand; a test fails if it is not current.
 
 ## Generated files are not in the repository
 
