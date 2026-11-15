@@ -1,7 +1,7 @@
 # Hybrid models
 
 !!! info "Work package 2, in progress"
-    This page describes the plan. The hybrid models are developed in a new module `hybrid/`, which imports `sbml2jax` as a package; the converter itself stays unchanged.
+    This page describes the plan. The hybrid models are developed in the module `hybrid/`, which imports `sbml2jax` as a package; the converter itself stays unchanged. The first step is done: [Warm-up](warmup.md), a plain network on a simulated panel.
 
 A hybrid model keeps the known mechanistic structure of an ODE model and lets a neural network take over a term which is poorly known. Where the network sits decides what it can learn: from patient characteristics before the simulation, inside the ODE system during the simulation, or in the observation after it. A universal differential equation (UDE, [Rackauckas *et al.* 2020](../references.md#hybrid-models)) is the case where the network is part of the right-hand side:
 

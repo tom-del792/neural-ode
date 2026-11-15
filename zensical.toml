@@ -40,6 +40,7 @@ nav = [
   ] },
   { "Hybrid models" = [
     "hybrid/index.md",
+    { "Warm-up" = "hybrid/warmup.md" },
   ] },
   { "API reference" = [
     "api/index.md",
@@ -53,6 +54,7 @@ nav = [
     { "sbml2jax.pinned" = "api/pinned.md" },
     { "sbml2jax.cli" = "api/cli.md" },
     { "sbml2jax.testsuite" = "api/testsuite.md" },
+    { "hybrid" = "api/hybrid.md" },
   ] },
   { "References" = "references.md" },
   { "Contributing" = "development.md" },
@@ -108,7 +110,7 @@ link = "https://github.com/matthiaskoenig/neural-ode"
 default_handler = "python"
 
 [project.plugins.mkdocstrings.handlers.python]
-paths = ["sbml2jax/src"]
+paths = ["sbml2jax/src", "hybrid/src"]
 
 [project.plugins.mkdocstrings.handlers.python.options]
 docstring_style = "google"

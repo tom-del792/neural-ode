@@ -25,7 +25,7 @@ Every work package is a module of the monorepo: a self-contained Python package 
 
 A new module `hybrid/`, which imports `sbml2jax` as a package; the converter stays unchanged. Each variant is trained and validated on its own data, see [Hybrid models](hybrid/index.md).
 
-- [ ] Neural networks on example data (no hybrid model): small networks trained on synthetic data to set up and test the training pipeline
+- [x] Neural networks on example data (no hybrid model): a network trained on a simulated panel of patients to set up and test the training pipeline, see [Warm-up](hybrid/warmup.md)
 - [x] Prerequisite: simulation compiled with `jax.jit` and batched with `jax.vmap` over subjects and doses
 - [ ] Prerequisites: common training setup (experiments, parameter mask, NLL loss, Adam then L-BFGS) and a test that every hybrid model equals the mechanistic model at initialization
 - [ ] Variant A, covariate model: a network maps covariates (renal and hepatic function, body weight, age) to scaling factors of the renal and hepatic clearance, evaluated once before the simulation

@@ -62,6 +62,15 @@ tox r -e ruff                                  # lint and format check
 | file | checks |
 | --- | --- |
 | `tests/test_package.py` | the package imports, double precision is enabled through `sbml2jax` |
+| `tests/test_config.py` | the cases of `configs/` are read; a wrong or missing value is a `ConfigError`; the hash of a dataset changes with the data settings only |
+| `tests/test_data.py` | sampled patients are within their bounds and reproducible; the batched panel equals the simulation of each patient on its own; ids are checked against the model; noise, split by patient, saving and loading |
+| `tests/test_nn.py` | the network and its zero last layer; the scaling and its inverse; scaling constants are not trained |
+| `tests/test_training.py` | the negative log-likelihood and its mask; `fit` learns a function and its noise, returns the model with the lowest validation loss and is reproducible; saved weights |
+| `tests/test_evaluation.py` | metrics of a perfect and of a constant prediction; the figures are written |
+| `tests/test_warmup.py` | the warm-up on the small test model from the configuration to the evaluated run: files of the run, validation patients are predicted, evaluation from saved weights, command line |
+| `tests/test_apixaban.py` | the ids of `configs/warmup_apixaban.toml` exist in the pinned apixaban model (downloads the model once) |
+
+All tests but the last run without a network connection on `docs/examples/absorption.xml`, with the generated files in a temporary directory.
 
 ## Documentation
 
@@ -81,6 +90,7 @@ Some pages show files of the repository, included with `--8<--` (pymdownx.snippe
 | [Conversion issues](sbml2jax/conversion-issues.md) | `sbml2jax/docs/conversion-issues.md` | edited by hand |
 | [Home](index.md#a-first-simulation) | `sbml2jax/examples/first_simulation.py`, figure `docs/images/first-simulation.png` | `uv run python examples/first_simulation.py ../docs/images/first-simulation.png` in `sbml2jax/` |
 | [Generated module](sbml2jax/generated-module.md) | `docs/examples/absorption.py` | `uv run sbml2jax ../docs/examples/absorption.xml -o ../docs/examples/absorption.py` in `sbml2jax/` |
+| [Warm-up](hybrid/warmup.md) | `hybrid/configs/warmup_apixaban.toml`, figure `docs/images/warmup-fits.png` | `uv run python examples/warmup.py configs/warmup_apixaban.toml ../docs/images/warmup-fits.png` in `hybrid/` |
 | [Pinned models](sbml2jax/models.md) | `sbml2jax/examples/models/models.toml`, `sbml2jax/examples/apixaban_example.py` | edited by hand |
 
 The workflow `.github/workflows/docs.yml` regenerates `docs/examples/absorption.py` and fails if it differs from the committed file, builds the site with `--strict` on every pull request, and publishes it to GitHub Pages on every push to `main`. The site is https://matthiaskoenig.github.io/neural-ode/; GitHub Pages is enabled in the settings of the repository (Pages, source "GitHub Actions").

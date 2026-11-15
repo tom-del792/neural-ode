@@ -1,0 +1,77 @@
+# Warm-up of work package 2: a plain neural network (no hybrid model) learns the
+# pharmacokinetics and pharmacodynamics of a panel of virtual patients, which is
+# simulated with the mechanistic apixaban model.
+#
+# Everything specific to the case is in this file; a new substance is a new file.
+
+name = "warmup_apixaban"
+seed = 0
+
+# the SBML model: pinned (url with {ref}, commit, checksum) or a local `path`
+[model]
+name = "apixaban"
+url = "https://raw.githubusercontent.com/matthiaskoenig/apixaban-model/{ref}/models/apixaban_body_flat.xml"
+ref = "d0e3277f3ebf389fe8ed8c9bc63be567ba929d3d"
+sha256 = "eeba5a98213ee4b32c2c2320b61c8409a5f427d59761c406738c6e21e741c6bb"
+
+[simulation]
+# sampling times of every patient [min]: dense after the dose, sparse later
+times = [0, 15, 30, 45, 60, 90, 120, 180, 240, 360, 480, 720, 960, 1200, 1440]
+batch_size = 64  # patients simulated at once
+
+# the dose is set at the first time; `target` is a state or constant of the model
+[dose]
+target = "PODOSE_api"  # oral dose [mg]
+distribution = "choice"
+values = [2.5, 5.0, 10.0, 20.0]
+
+# covariates are inputs of the model which differ between the patients
+[covariates.BW]  # body weight [kg]
+distribution = "uniform"
+low = 50.0
+high = 110.0
+
+[covariates.KI__f_renal_function]  # renal function, 1 is healthy
+distribution = "loguniform"
+low = 0.2
+high = 1.2
+
+[covariates.f_cirrhosis]  # degree of cirrhosis, 0 is healthy
+distribution = "uniform"
+low = 0.0
+high = 0.6
+
+# observables are outputs of the model, measured with the noise
+# sigma = additive + proportional * value
+[observables.Cve_api]  # venous plasma concentration [mmol/l]
+proportional = 0.10
+additive = 2e-6
+
+[observables.antiXa_activity]  # anti-Xa activity [IU/ml]
+proportional = 0.10
+additive = 0.02
+
+[observables.PT]  # prothrombin time [s]
+proportional = 0.03
+additive = 0.0
+
+[observables.aPTT]  # activated partial thromboplastin time [s]
+proportional = 0.03
+additive = 0.0
+
+[population]
+n_subjects = 256
+validation_fraction = 0.25  # of the patients, never seen in training
+missing_fraction = 0.0  # of the measurements, dropped at random
+
+[network]
+width = 64
+depth = 3
+activation = "tanh"
+
+[training]
+batch_size = 32  # patients per Adam step
+adam_steps = 4000
+learning_rate = 3e-3
+lbfgs_steps = 300
+eval_every = 100
