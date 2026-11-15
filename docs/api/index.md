@@ -1,6 +1,6 @@
 # API reference
 
-The API of `sbml2jax`, rendered from the docstrings of the code. Most users need only [`sbml2jax.model`](model.md): `JaxModel`, `Segment` and `SolverSettings`.
+The API of `sbml2jax` and `hybrid`, rendered from the docstrings of the code. Most users need only [`sbml2jax.model`](model.md): `JaxModel`, `Segment` and `SolverSettings`.
 
 | module | content |
 | --- | --- |
@@ -14,5 +14,6 @@ The API of `sbml2jax`, rendered from the docstrings of the code. Most users need
 | [`sbml2jax.pinned`](pinned.md) | `PinnedModel`, `fetch`, `read_pinned`: models at a fixed commit, downloaded into the cache |
 | [`sbml2jax.cli`](cli.md) | the command line `sbml2jax` |
 | [`sbml2jax.testsuite`](testsuite.md) | the SBML test suite harness |
+| [`hybrid`](hybrid.md) | configuration of a case, data generation, networks, training and evaluation |
 
 ::: sbml2jax

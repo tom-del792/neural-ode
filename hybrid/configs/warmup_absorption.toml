@@ -1,0 +1,53 @@
+# The warm-up on the small test model of the documentation (one-compartment
+# absorption with an Emax effect): the same code as `warmup_apixaban.toml`, run
+# by the tests without a download.
+
+name = "warmup_absorption"
+seed = 0
+
+[model]
+path = "../../docs/examples/absorption.xml"  # relative to this file
+
+[simulation]
+times = [0, 5, 10, 20, 30, 45, 60, 90, 120, 180, 240]
+batch_size = 64
+
+[dose]
+target = "Agut"  # amount in the gut
+distribution = "choice"
+values = [5.0, 10.0, 20.0]
+
+[covariates.ka]  # absorption rate constant
+distribution = "loguniform"
+low = 0.01
+high = 0.04
+
+[covariates.CL]  # clearance
+distribution = "loguniform"
+low = 0.05
+high = 0.2
+
+[observables.C]  # plasma concentration
+proportional = 0.05
+additive = 0.01
+
+[observables.E]  # effect
+proportional = 0.05
+additive = 0.005
+
+[population]
+n_subjects = 128
+validation_fraction = 0.25
+missing_fraction = 0.1
+
+[network]
+width = 32
+depth = 2
+activation = "tanh"
+
+[training]
+batch_size = 32
+adam_steps = 1500
+learning_rate = 3e-3
+lbfgs_steps = 100
+eval_every = 100
